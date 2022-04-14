@@ -1,6 +1,6 @@
 package com.hcl.trainingprojects.students;
 
-	public class Student implements Comparable<Student>{
+	public class Student implements Comparable<Student> {
 		private int rollno;
 		private String name;
 		private int age;
@@ -33,6 +33,10 @@ package com.hcl.trainingprojects.students;
 
 		public void setAge(int age) {
 			this.age = age;
+		}
+		
+		public String getStudent() {
+			return (this.rollno+" "+this.name+" "+this.age);
 		}
 		
 		public int hashCode() {

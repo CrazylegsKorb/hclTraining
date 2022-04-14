@@ -1,6 +1,9 @@
 package com.hcl.trainingprojects.students;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class Test {
@@ -12,9 +15,12 @@ public class Test {
 		 * For update and delete you need to pass the roll number and it should retrieve
 		 * the student and you should be able to change the name or age.
 		 */
-		TreeSet<Student> school = new TreeSet<>();
+		Set<Student> school = new TreeSet<>();
 		Scanner bin = new Scanner(System.in);
-		boolean run = true;
+		File save = new File(".\\src\\com\\hcl\\trainingprojects\\students\\save.txt");
+		boolean run = findFile(save);
+
+		importStudents(school, save);
 
 		introBanner();
 		do {
@@ -33,7 +39,7 @@ public class Test {
 				break;
 
 			case "3":
-			case "delete":
+			case "remove":
 				delete(school, bin); // deletes existing student by rollno
 				break;
 
@@ -54,21 +60,63 @@ public class Test {
 
 		} while (run);
 
+		saveStudents(school, save);
 		outtroBanner();
 		bin.close();
 	}
 
+	private static void saveStudents(Set<Student> school, File save) {
+		try (FileWriter fw = new FileWriter(save, false);) {
+			for (Student s : school) {
+				fw.write(s.getStudent() + "\n");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void importStudents(Set<Student> school, File save) {
+		try (Scanner in = new Scanner(save)) {
+			String[] line;
+			while (in.hasNextLine()) {
+				line = in.nextLine().split(" ");
+				school.add(new Student(Integer.parseInt(line[0]), line[1], Integer.parseInt(line[2])));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static boolean findFile(File save) {
+		try {
+			if (save.createNewFile()) {
+				System.out.println("Save file created!\n");
+			} else {
+				System.out.println("Save file found!\n");
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
 	// list all students
-	private static void list(TreeSet<Student> school) {
-		for (Student i : school) {
-			System.out.println("\n# Name = " + i.getName());
-			System.out.println("# Age  = " + i.getAge());
-			System.out.println("# Id   = " + i.getRollno());
+	private static void list(Set<Student> school) {
+		if(school.isEmpty()) {
+			System.out.println("\nNo students enrolled!");
+		}else {
+			for (Student i : school) {
+				System.out.println("\n# Name = " + i.getName());
+				System.out.println("# Age  = " + i.getAge());
+				System.out.println("# Id   = " + i.getRollno());
+			}
 		}
 	}
 
 	// removes student from set using rollno, prints if successful
-	private static void delete(TreeSet<Student> school, Scanner bin) {
+	private static void delete(Set<Student> school, Scanner bin) {
 		boolean flag = true;
 		System.out.println("\nPlease enter student id");
 		System.out.print(": ");
@@ -89,7 +137,7 @@ public class Test {
 	}
 
 	// updates existing student from set using rollno, prints if successful
-	private static void update(TreeSet<Student> school, Scanner bin) {
+	private static void update(Set<Student> school, Scanner bin) {
 		boolean flag = true;
 		System.out.println("\nPlease enter student id");
 		System.out.print(": ");
@@ -115,7 +163,7 @@ public class Test {
 		}
 	}
 
-	private static void add(TreeSet<Student> school, Scanner bin) {
+	private static void add(Set<Student> school, Scanner bin) {
 		boolean flag = true;
 		System.out.println("\nPlease enter student id");
 		System.out.print(": ");
